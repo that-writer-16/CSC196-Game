@@ -1,0 +1,1 @@
+This is the game file in the assests folder.
