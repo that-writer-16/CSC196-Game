@@ -1,43 +1,82 @@
-#include "Core/Random.h"
-#include "Core/FileIO.h"
-#include "Core/Memory.h"
-#include "Core/Time.h"
+#include "Core/Core.h"
 #include "Renderer/Render.h"
 #include <iostream>
+#include <vector>
+
 using namespace std;
 
-int main()
+using vec2 = kiko::Vector2;
+
+class Star
 {
-	kiko::g_memoryTracker.DisplayInfo();
-	int* p = new int;
-	kiko::g_memoryTracker.DisplayInfo();
-	delete p;
-	kiko::g_memoryTracker.DisplayInfo();
+public:
+	Star(const vec2& pos, const vec2& vel) :
+		m_pos{ pos },
+		m_vel{ vel }
+	{}
 
-	kiko::Time timer;
-	for (int i = 0; i < 10000000; i++){}
-	cout << timer.GetElapsedMicroseconds() << endl;
+	void Update(int width, int height)
+	{
+		m_pos += m_vel;
+		if (m_pos.x >= width) m_pos.x = 0;
+		if (m_pos.y >= height) m_pos.y = 0;
+	}
 
-	
-	//cout << "Get File Path: " << kiko::getFilePath() << endl;
+	void Draw(kiko::Renderer& renderer)
+	{
+		renderer.DrawPoint(m_pos.x, m_pos.y);
+	}
 
-	//kiko::setFilePath("Assets");
-	//cout << "Get File Path. New file path set: " << kiko::getFilePath() << endl;
-
-	//size_t size;
-	//kiko::getFileSize("game.txt", size);
-	//cout << "Get File Size: " << size << endl;
+public:
+	kiko::Vector2 m_pos;
+	kiko::Vector2 m_vel;
+};
 
 
-	//std::string s;
-	//kiko::readFile("game.txt", s);
-	//cout << "Read File: " << s << endl;
 
-	//kiko::seedRandom((unsigned int)time(nullptr));
-	//cout << "Random: ";
-	//for (int i = 0; i < 5; i++) 
-	//{
-	//	cout << kiko::random(1,5) << endl;
-	//}
-	
+int main(int argc, char* argv[])
+{
+	kiko::seedRandom((unsigned int)time(nullptr));
+
+	kiko::Renderer renderer;
+	renderer.Initialize();
+	renderer.CreateWindow("CSC196", 800, 600);
+
+	vector<Star> stars;
+	for (int i = 0; i < 1000; i++)
+	{
+		kiko::Vector2 pos(kiko::Vector2(kiko::random(renderer.GetWidth()), kiko::random(renderer.GetHeight())));
+		kiko::Vector2 vel(kiko::randomf(1, 4), 0.0f);
+
+		stars.push_back(Star(pos, vel));
+	}
+
+
+	while (true)
+	{
+		renderer.SetColor(0, 0, 0, 0);
+		renderer.BeginFrame();
+		// draw
+		for (auto& star : stars)
+		{
+			star.Update(renderer.GetWidth(), renderer.GetHeight());
+
+			renderer.SetColor(kiko::random(256), kiko::random(256), kiko::random(256), 255);
+			
+			star.Draw(renderer);
+		}
+
+
+		//for (int i = 0; i < 10000; i++)
+		//{
+		//	kiko::Vector2 pos(kiko::random(renderer.GetWidth()), kiko::random(renderer.GetHeight()));
+		//	renderer.SetColor(kiko::random(256), kiko::random(256), kiko::random(256), 255);
+		//	renderer.DrawPoint(pos.x, pos.y);
+		//}
+		
+		
+		renderer.EndFrame();
+	}
+
+	return 0;
 }
