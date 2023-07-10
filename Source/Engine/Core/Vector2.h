@@ -1,4 +1,5 @@
 #pragma once
+#include <cmath>
 
 namespace kiko
 {
@@ -12,7 +13,6 @@ namespace kiko
 		Vector2(float x, float y) : x{ x }, y{ y } {}
 		Vector2(int x, int y) : x{ (float)x }, y{ (float)y } {}
 
-		//Vector2 Add(const Vector2& v) const { return Vector2(x + v.x, y + v.y); };
 		Vector2 operator + (const Vector2& v) const { return Vector2(x + v.x, y + v.y); }
 		Vector2 operator - (const Vector2& v) const { return Vector2(x - v.x, y - v.y); }
 		Vector2 operator * (const Vector2& v) const { return Vector2(x * v.x, y * v.y); }
@@ -26,7 +26,14 @@ namespace kiko
 		Vector2& operator += (const Vector2& v) { Vector2(x += v.x, y += v.y); return *this; }
 		Vector2& operator -= (const Vector2& v) { Vector2(x -= v.x, y -= v.y); return *this; }
 		Vector2& operator *= (const Vector2& v) { Vector2(x *= v.x, y *= v.y); return *this; }
-		Vector2& operator /= (const Vector2& v) { Vector2(x /= v.x, y /= v.y); return *this; }		
+		Vector2& operator /= (const Vector2& v) { Vector2(x /= v.x, y /= v.y); return *this; }	
+
+
+		float LengthSqr() { return (x * x) + (y * y); }
+		float Length() { return sqrt(LengthSqr()); }
+
+		Vector2 Normalized() { return *this / Length(); }
+		void Nomalize() { *this /= Length(); }
 	};
 
 	using vec2 = Vector2;

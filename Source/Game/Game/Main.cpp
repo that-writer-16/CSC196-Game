@@ -1,10 +1,10 @@
 #include "Core/Core.h"
 #include "Renderer/Render.h"
+#include "Renderer/Model.h"
 #include <iostream>
 #include <vector>
 
 using namespace std;
-
 using vec2 = kiko::Vector2;
 
 class Star
@@ -32,8 +32,6 @@ public:
 	kiko::Vector2 m_vel;
 };
 
-
-
 int main(int argc, char* argv[])
 {
 	kiko::seedRandom((unsigned int)time(nullptr));
@@ -41,6 +39,12 @@ int main(int argc, char* argv[])
 	kiko::Renderer renderer;
 	renderer.Initialize();
 	renderer.CreateWindow("CSC196", 800, 600);
+
+	std::vector<vec2> points{ { -10, 5 }, { 10, 5 }, { 0, -5 }, { -10, 5 } };
+	kiko::Model model{points};
+
+	kiko::vec2 v{ 5, 5 };
+	v.Nomalize();
 
 	vector<Star> stars;
 	for (int i = 0; i < 1000; i++)
@@ -50,7 +54,6 @@ int main(int argc, char* argv[])
 
 		stars.push_back(Star(pos, vel));
 	}
-
 
 	while (true)
 	{
@@ -66,17 +69,9 @@ int main(int argc, char* argv[])
 			star.Draw(renderer);
 		}
 
-
-		//for (int i = 0; i < 10000; i++)
-		//{
-		//	kiko::Vector2 pos(kiko::random(renderer.GetWidth()), kiko::random(renderer.GetHeight()));
-		//	renderer.SetColor(kiko::random(256), kiko::random(256), kiko::random(256), 255);
-		//	renderer.DrawPoint(pos.x, pos.y);
-		//}
-		
+		model.Draw(renderer, { 400, 300 }, 5.5f);
 		
 		renderer.EndFrame();
 	}
-
 	return 0;
 }
