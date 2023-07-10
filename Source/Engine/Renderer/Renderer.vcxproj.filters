@@ -10,9 +10,13 @@
     <ClInclude Include="Render.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Model.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Render.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
