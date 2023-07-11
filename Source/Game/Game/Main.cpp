@@ -4,6 +4,7 @@
 #include "Input/InputSystem.h"
 #include <iostream>
 #include <vector>
+#include <thread>
 
 using namespace std;
 using vec2 = kiko::Vector2;
@@ -18,7 +19,8 @@ public:
 
 	void Update(int width, int height)
 	{
-		m_pos += m_vel;
+		
+		m_pos += m_vel * kiko::g_time.GetDeltaTime();
 		if (m_pos.x >= width) m_pos.x = 0;
 		if (m_pos.y >= height) m_pos.y = 0;
 	}
@@ -36,6 +38,7 @@ public:
 int main(int argc, char* argv[])
 {
 	kiko::seedRandom((unsigned int)time(nullptr));
+	kiko::setFilePath("assets");
 
 	kiko::Renderer renderer;
 	renderer.Initialize();
@@ -44,8 +47,9 @@ int main(int argc, char* argv[])
 	kiko::InputSystem inputSystem;
 	inputSystem.Initialize();
 
-	std::vector<vec2> points{ { -10, 5 }, { 10, 5 }, { 0, -5 }, { -10, 5 } };
-	kiko::Model model{points};
+	//std::vector<vec2> points{ { -10, 5 }, { 10, 5 }, { 0, -5 }, { -10, 5 } };
+	kiko::Model model;
+	model.Load("ship.txt");
 
 	kiko::vec2 v{ 5, 5 };
 	v.Nomalize();
@@ -59,14 +63,26 @@ int main(int argc, char* argv[])
 		stars.push_back(Star(pos, vel));
 	}
 
+	kiko::vec2 position{ 400, 500 };
+	float speed = 50.0f;
+
 	bool quit = false;
 	while (!quit)
 	{
+		kiko::g_time.Tick();
 		inputSystem.Update();
 		if (inputSystem.GetKeyDown(SDL_SCANCODE_ESCAPE))
 		{
 			quit = true;
 		}
+
+		kiko::vec2 direction;
+		if (inputSystem.GetKeyDown(SDL_SCANCODE_W)) direction.y = -1;
+		if (inputSystem.GetKeyDown(SDL_SCANCODE_A)) direction.x = -1;
+		if (inputSystem.GetKeyDown(SDL_SCANCODE_S)) direction.y = 1;
+		if (inputSystem.GetKeyDown(SDL_SCANCODE_D)) direction.x = 1;
+
+		position += direction * speed * kiko::g_time.GetDeltaTime();
 
 		if (inputSystem.GetMouseButtonDown(0))
 		{
@@ -93,9 +109,11 @@ int main(int argc, char* argv[])
 			star.Draw(renderer);
 		}
 
-		model.Draw(renderer, { 400, 300 }, 5.5f);
+		model.Draw(renderer, position, 2.75f);
 		
 		renderer.EndFrame();
+
+		//this_thread::sleep_for(chrono::milliseconds(100));
 	}
 	return 0;
 }

@@ -15,7 +15,6 @@ namespace kiko
 	}
 	void InputSystem::Shutdown()
 	{
-		//
 	}
 	void InputSystem::Update()
 	{
