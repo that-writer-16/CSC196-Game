@@ -1,5 +1,5 @@
 #pragma once
-#include <../ThirdParty/SDL2-2.28.0/include/SDL.h>
+#include <SDL2-2.28.0/include/SDL.h>
 #include <string>
 
 namespace kiko
