@@ -8,6 +8,9 @@ bool kiko::Model::Load(const std::string& filename)
 	kiko::readFile(filename, buffer);
 
 	std::istringstream stream(buffer);
+
+	stream >> m_color;
+
 	std::string line;
 	std::getline(stream, line);
 
@@ -25,12 +28,19 @@ bool kiko::Model::Load(const std::string& filename)
 
 void kiko::Model::Draw(Renderer& renderer, const vec2& position, float rotation, float scale)
 {
-for (int i = 0; i < (m_points.size() - 1); i++)
+	if (m_points.empty()) return;
+
+	renderer.SetColor(Color::ToInt(m_color.r), Color::ToInt(m_color.g), Color::ToInt(m_color.b), Color::ToInt(m_color.a));
+	for (int i = 0; i < (m_points.size() - 1); i++)
 	{
-		if (m_points.empty()) return;
 		vec2 p1 = (m_points[i] * scale).Rotate(rotation) + position;
 		vec2 p2 = (m_points[i + 1] * scale).Rotate(rotation) + position;
 
 		renderer.DrawLine(p1.x, p1.y, p2.x, p2.y);
 	}
+}
+
+void kiko::Model::Draw(Renderer& renderer, const Transform transform)
+{
+	Draw(renderer, transform.position, transform.rotation, transform.scale);
 }

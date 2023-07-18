@@ -2,6 +2,10 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/Model.h"
 #include "Input/InputSystem.h"
+#include "Audio/AudioSystem.h"
+#include "Player.h"
+#include "Enemy.h"
+#include "Framework/Scene.h"
 #include <iostream>
 #include <vector>
 #include <thread>
@@ -37,19 +41,23 @@ public:
 
 int main(int argc, char* argv[])
 {
+	//std::unique_ptr<int> up = std::make_unique<int>(10);//auto delete//only one owner
+
+	kiko::g_memoryTracker.DisplayInfo();
+
 	constexpr float a = kiko::DegToRad(180.0f);
 
 	kiko::seedRandom((unsigned int)time(nullptr));
 	kiko::setFilePath("assets");
 
-	kiko::Renderer renderer;
-	renderer.Initialize();
-	renderer.CreateWindow("CSC196", 800, 600);
+	kiko::g_renderer.Initialize();
+	kiko::g_renderer.CreateWindow("CSC196", 800, 600);
 
-	kiko::InputSystem inputSystem;
-	inputSystem.Initialize();
+	kiko::g_inputSystem.Initialize();
 
-	//std::vector<vec2> points{ { -10, 5 }, { 10, 5 }, { 0, -5 }, { -10, 5 } };
+	kiko::g_audioSystem.Initialize();
+	kiko::g_audioSystem.AddAudio("shoot", "shoot.wav");
+
 	kiko::Model model;
 	model.Load("ship.txt");
 
@@ -59,77 +67,58 @@ int main(int argc, char* argv[])
 	vector<Star> stars;
 	for (int i = 0; i < 1000; i++)
 	{
-		kiko::Vector2 pos(kiko::Vector2(kiko::random(renderer.GetWidth()), kiko::random(renderer.GetHeight())));
+		kiko::Vector2 pos(kiko::Vector2(kiko::random(kiko::g_renderer.GetWidth()), kiko::random(kiko::g_renderer.GetHeight())));
 		kiko::Vector2 vel(kiko::randomf(1, 4), 0.0f);
 
 		stars.push_back(Star(pos, vel));
 	}
 
-	kiko::Transform transform{ { 400, 300 }, 0, 3};
-	kiko::vec2 position{ 400, 500 };
-	float speed = 100.0f;
-	float turnRate = kiko::DegToRad(180);
+	kiko::Scene scene;
+	unique_ptr<Player> player = make_unique<Player>(200.0f, kiko::Pi, kiko::Transform{ { 400, 300}, 0, 6 }, model);
+	scene.Add(move(player));
+	std::vector<Enemy> enemies;
+	for (int i = 0; i < 50; i++)
+	{
+		unique_ptr<Enemy> enemy = make_unique<Enemy>(300, kiko::Pi, kiko::Transform{ { kiko::random(800), kiko::random(400)}, kiko::randomf(kiko::TwoPi), 1}, model);
+		scene.Add(move(enemy));
+	}
 
 	bool quit = false;
 	while (!quit)
 	{
 		kiko::g_time.Tick();
-		inputSystem.Update();
-		if (inputSystem.GetKeyDown(SDL_SCANCODE_ESCAPE))
+		kiko::g_inputSystem.Update();
+		if (kiko::g_inputSystem.GetKeyDown(SDL_SCANCODE_ESCAPE))
 		{
 			quit = true;
 		}
-
-		float rotate = 0;
-		if (inputSystem.GetKeyDown(SDL_SCANCODE_A)) rotate = -1;
-		if (inputSystem.GetKeyDown(SDL_SCANCODE_D)) rotate = 1;
-		transform.rotation += rotate * turnRate * kiko::g_time.GetDeltaTime();
-
-		float thrust = 0;
-		if (inputSystem.GetKeyDown(SDL_SCANCODE_W)) thrust = 1;
-
-		kiko::vec2 forward = kiko::vec2{ 0, -1 }.Rotate(transform.rotation);
-		transform.position += forward * speed * thrust * kiko::g_time.GetDeltaTime();
-		transform.position.x = kiko::Wrap(transform.position.x, (float)renderer.GetWidth());
-		transform.position.y = kiko::Wrap(transform.position.y, (float)renderer.GetHeight());
-
-		/*kiko::vec2 direction;
-		if (inputSystem.GetKeyDown(SDL_SCANCODE_W)) direction.y = -1;
-		if (inputSystem.GetKeyDown(SDL_SCANCODE_A)) direction.x = -1;
-		if (inputSystem.GetKeyDown(SDL_SCANCODE_S)) direction.y = 1;
-		if (inputSystem.GetKeyDown(SDL_SCANCODE_D)) direction.x = 1;
-
-		position += direction * speed * kiko::g_time.GetDeltaTime();*/
-
-		if (inputSystem.GetMouseButtonDown(0))
+		kiko::g_audioSystem.Update();
+		if (kiko::g_inputSystem.GetKeyDown(SDL_SCANCODE_SPACE))
 		{
-			cout << "Left Button Pressed." << endl;
-		}
-		else if (inputSystem.GetMouseButtonDown(1))
-		{
-			cout << "Middle Button Pressed." << endl;
-		}
-		else if (inputSystem.GetMouseButtonDown(2))
-		{
-			cout << "Right Button Pressed." << endl;
+			kiko::g_audioSystem.PlayOneShot("shoot");
 		}
 
-		renderer.SetColor(0, 0, 0, 0);
-		renderer.BeginFrame();
+		scene.Update(kiko::g_time.GetDeltaTime());
+		//Background color
+		kiko::g_renderer.SetColor(0, 0, 0, 0);
+		kiko::g_renderer.BeginFrame();
 		// draw
 		for (auto& star : stars)
 		{
-			star.Update(renderer.GetWidth(), renderer.GetHeight());
+			star.Update(kiko::g_renderer.GetWidth(), kiko::g_renderer.GetHeight());
 
-			renderer.SetColor(kiko::random(256), kiko::random(256), kiko::random(256), 255);
+			kiko::g_renderer.SetColor(kiko::random(256), kiko::random(256), kiko::random(256), 255);
 			
-			star.Draw(renderer);
+			star.Draw(kiko::g_renderer);
 		}
 
-		model.Draw(renderer, transform.position, transform.rotation, transform.scale);
+		scene.Draw(kiko::g_renderer);
 		
-		renderer.EndFrame();
-
+		kiko::g_renderer.EndFrame();
 	}
+	stars.clear();//may or may not have affected bytes allocated
+	scene.RemoveAll();
+	kiko::g_memoryTracker.DisplayInfo();
+
 	return 0;
 }

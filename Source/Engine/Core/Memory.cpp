@@ -1,5 +1,6 @@
 #include "Memory.h"
 #include <iostream>
+#include <memory>
 
 using namespace std;
 kiko::MemoryTracker kiko::g_memoryTracker;
