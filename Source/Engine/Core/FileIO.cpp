@@ -1,7 +1,6 @@
 #include "FileIO.h"
 #include <fstream>
 
-
 namespace kiko
 {
 	std::string kiko::getFilePath()
@@ -42,5 +41,4 @@ namespace kiko
 
 		return true;
 	}
-
 }

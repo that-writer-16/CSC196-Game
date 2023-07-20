@@ -1,4 +1,5 @@
 #include "Time.h"
+#include "MathUtils.h"
 
 namespace kiko
 {
@@ -10,6 +11,7 @@ namespace kiko
 
 		duration = clock::now() - m_frameTime;
 		m_deltaTime = duration.count() / static_cast<float>(clock_duration::period::den); 
+		m_deltaTime = Min(m_deltaTime, 0.25f);
 
 		m_frameTime = clock::now();
 	}
@@ -33,4 +35,3 @@ namespace kiko
 		return (clock::now() - m_startTime).count() / static_cast<float>(clock_duration::period::den);
 	}
 }
-

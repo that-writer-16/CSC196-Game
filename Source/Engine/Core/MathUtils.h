@@ -10,7 +10,6 @@ namespace kiko
 	constexpr float RadToDeg(float radians) { return radians * (180.0f / Pi); }
 	constexpr float DegToRad(float degrees) { return degrees * (Pi / 180.0f); }
 
-
 	inline float Wrap(int value, int max)
 	{
 		return (value, max) + ((value < 0) ? max : 0);

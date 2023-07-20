@@ -1,6 +1,6 @@
 #include "Core/Core.h"
 #include "Renderer/Renderer.h"
-#include "Renderer/Model.h"
+#include "Renderer/ModelManager.h"
 #include "Input/InputSystem.h"
 #include "Audio/AudioSystem.h"
 #include "Player.h"
@@ -41,12 +41,7 @@ public:
 
 int main(int argc, char* argv[])
 {
-	//std::unique_ptr<int> up = std::make_unique<int>(10);//auto delete//only one owner
-
-	kiko::g_memoryTracker.DisplayInfo();
-
-	constexpr float a = kiko::DegToRad(180.0f);
-
+	kiko::MemoryTracker::Initialize();
 	kiko::seedRandom((unsigned int)time(nullptr));
 	kiko::setFilePath("assets");
 
@@ -58,8 +53,7 @@ int main(int argc, char* argv[])
 	kiko::g_audioSystem.Initialize();
 	kiko::g_audioSystem.AddAudio("shoot", "shoot.wav");
 
-	kiko::Model model;
-	model.Load("ship.txt");
+	//share models in teams
 
 	kiko::vec2 v{ 5, 5 };
 	v.Nomalize();
@@ -74,12 +68,14 @@ int main(int argc, char* argv[])
 	}
 
 	kiko::Scene scene;
-	unique_ptr<Player> player = make_unique<Player>(200.0f, kiko::Pi, kiko::Transform{ { 400, 300}, 0, 6 }, model);
+	unique_ptr<Player> player = make_unique<Player>(200.0f, kiko::Pi, kiko::Transform{ { 400, 300}, 0, 6 }, kiko::g_manager.Get("ship.txt"));
+	player-> m_tag = "Player"; //could put it in the constructor
 	scene.Add(move(player));
 	std::vector<Enemy> enemies;
-	for (int i = 0; i < 50; i++)
+	for (int i = 0; i < 5; i++)
 	{
-		unique_ptr<Enemy> enemy = make_unique<Enemy>(300, kiko::Pi, kiko::Transform{ { kiko::random(800), kiko::random(400)}, kiko::randomf(kiko::TwoPi), 1}, model);
+		unique_ptr<Enemy> enemy = make_unique<Enemy>(kiko::randomf(100, 181), kiko::Pi, kiko::Transform{ { kiko::random(800), kiko::random(400)}, kiko::randomf(kiko::TwoPi), 2}, kiko::g_manager.Get("s.txt"));
+		enemy->m_tag = "Enemy";
 		scene.Add(move(enemy));
 	}
 
@@ -118,7 +114,6 @@ int main(int argc, char* argv[])
 	}
 	stars.clear();//may or may not have affected bytes allocated
 	scene.RemoveAll();
-	kiko::g_memoryTracker.DisplayInfo();
 
 	return 0;
 }
