@@ -9,7 +9,7 @@ namespace kiko
 		while (iter != m_actors.end())
 		{
 			(*iter)->Update(dt);
-			iter = ((*iter)->m_destroyed) ? m_actors.erase(iter) : ++iter;
+			iter = ((*iter)->m_destroyed) ? m_actors.erase(iter) : iter++;
 			if (iter->get()->m_destroyed)
 			{
 				iter = m_actors.erase(iter);

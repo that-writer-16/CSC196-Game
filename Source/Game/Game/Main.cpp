@@ -1,6 +1,8 @@
 #include "Core/Core.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/ModelManager.h"
+#include "Renderer/Font.h"
+#include "Renderer/Text.h"
 #include "Input/InputSystem.h"
 #include "Audio/AudioSystem.h"
 #include "Player.h"
@@ -53,6 +55,11 @@ int main(int argc, char* argv[])
 	kiko::g_audioSystem.Initialize();
 	kiko::g_audioSystem.AddAudio("shoot", "shoot.wav");
 
+	shared_ptr<kiko::Font> font = make_shared<kiko::Font>("Starlight.ttf", 50);
+
+	unique_ptr<kiko::Text> text = make_unique<kiko::Text>(font);
+	text->Create(kiko::g_renderer, "NEUMONT", kiko::Color{ 1, 1, 1, 1 });
+
 	//share models in teams
 
 	kiko::vec2 v{ 5, 5 };
@@ -101,12 +108,13 @@ int main(int argc, char* argv[])
 		// draw
 		for (auto& star : stars)
 		{
-			star.Update(kiko::g_renderer.GetWidth(), kiko::g_renderer.GetHeight());
+ 			star.Update(kiko::g_renderer.GetWidth(), kiko::g_renderer.GetHeight());
 
 			kiko::g_renderer.SetColor(kiko::random(256), kiko::random(256), kiko::random(256), 255);
 			
 			star.Draw(kiko::g_renderer);
 		}
+		text->Draw(kiko::g_renderer, 400, 300);
 
 		scene.Draw(kiko::g_renderer);
 		
