@@ -4,20 +4,12 @@ namespace kiko
 {
 	void Scene::Update(float dt)
 	{
-		//update remove destroyed actors
+		// update and destroyed remove actors
 		auto iter = m_actors.begin();
 		while (iter != m_actors.end())
 		{
 			(*iter)->Update(dt);
-			iter = ((*iter)->m_destroyed) ? m_actors.erase(iter) : iter++;
-			if (iter->get()->m_destroyed)
-			{
-				iter = m_actors.erase(iter);
-			}
-			else
-			{
-				iter++;
-			}
+			((*iter)->m_destroyed) ? iter = m_actors.erase(iter) : iter++;
 		}
 
 		//check collisions

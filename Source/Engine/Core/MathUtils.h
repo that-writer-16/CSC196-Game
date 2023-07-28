@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <utility>//if swap didn't work add this.
 
 namespace kiko
 {
@@ -39,5 +40,11 @@ namespace kiko
 		else if (value > max) value = max;
 
 		return value;
+	}
+
+	template<typename T>
+	constexpr T Lerp(const T& a, const T& b, float t)
+	{
+		return (a * (1.0f - t)) + (b * t);//can be used to make title move 
 	}
 }

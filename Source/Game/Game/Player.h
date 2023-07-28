@@ -10,9 +10,10 @@ public:
 	void Update(float dt) override;
 	void OnCollision(Actor* other) override;
 
-	
+	float GetHealth() { return m_health; }
 private:
 	float m_speed = 0;
 	float m_turnRate = 0;
-	float m_health = 100;
+	float m_health = 1000;
+	int m_bombCounter = 5;
 };

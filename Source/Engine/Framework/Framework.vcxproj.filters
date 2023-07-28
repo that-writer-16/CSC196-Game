@@ -13,12 +13,21 @@
     <ClCompile Include="Scene.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Emitter.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Emitter.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>

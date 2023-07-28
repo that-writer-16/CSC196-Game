@@ -19,6 +19,15 @@
     <ClCompile Include="Weapon.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="SpaceGame.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Health.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Bomb.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Player.h">
@@ -28,6 +37,15 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Weapon.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="SpaceGame.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Health.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Bomb.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
